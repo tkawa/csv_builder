@@ -67,8 +67,10 @@ module CsvBuilder # :nodoc:
   # the template to be passed to it as a proc. An instance of this class is returned from the template handler's
   # compile method, and will receive calls to each. Data is streamed by yielding back to the containing block.
   class Streamer
-    def initialize(template_proc)
+    def initialize(template_proc, csv_options = {}, output_encoding = 'ISO-8859-1')
       @template_proc = template_proc
+      @csv_options = csv_options
+      @output_encoding = output_encoding
     end
 
     def each
@@ -104,7 +106,7 @@ module CsvBuilder # :nodoc:
           template = Proc.new {|csv|
             #{template.source}
           }
-          CsvBuilder::Streamer.new(template)
+          CsvBuilder::Streamer.new(template, @csv_options, @output_encoding)
         else
           output = CSV.generate(@csv_options || {}) do |faster_csv|
             csv = CsvBuilder::TransliteratingFilter.new(faster_csv, @input_encoding || 'UTF-8', @output_encoding || 'ISO-8859-1')
