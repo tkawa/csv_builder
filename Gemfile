@@ -1,3 +1,5 @@
-source "http://www.rubygems.org"
+source 'https://www.rubygems.org'
 
 gemspec
+
+gem 'appraisal'
