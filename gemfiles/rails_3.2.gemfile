@@ -3,6 +3,7 @@
 source "https://www.rubygems.org"
 
 gem "appraisal"
+gem "codeclimate-test-reporter", :require => false
 gem "rails", "3.2.22.2"
 
 gemspec :path => "../"
