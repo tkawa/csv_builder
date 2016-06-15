@@ -1,6 +1,4 @@
-#encoding: utf-8
-
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 class CsvBuilderReportsController < ApplicationController
   before_filter {|c| c.prepend_view_path(File.expand_path(File.dirname(__FILE__) + '/../templates')) }
@@ -38,12 +36,7 @@ class CsvBuilderReportsController < ApplicationController
 
 end
 
-if defined?(Rails) and Rails.version < '3'
-  ActionController::Routing::Routes.draw { |map| map.connect ':controller/:action' }
-else
-  Rails.application.routes.draw { get ':controller/:action' }
-end
-
+Rails.application.routes.draw { get ':controller/:action' }
 
 describe CsvBuilderReportsController do
   render_views
@@ -64,13 +57,7 @@ describe CsvBuilderReportsController do
     describe "output encoding" do
       let(:expected_utf8) { generate({}, [['£12.34', 'ąčęėįšųūž', 'foo']]) }
 
-      if RUBY_VERSION.to_f < 1.9 && RUBY_PLATFORM.match(/darwin/)
-        # iconv appears to have more transliteration built into it on OSX than
-        # other platforms and so does a 'better' job of converting to ASCII
-        let(:expected_ascii) { generate({}, [['lb12.34' ,'aceeisuuz', 'foo']]) }
-      else
-        let(:expected_ascii) { generate({}, [['?12.34' ,'?????????', 'foo']]) }
-      end
+      let(:expected_ascii) { generate({}, [['?12.34' ,'?????????', 'foo']]) }
 
       it "transliterates to ASCII when required" do
         get 'encoding', :format => 'csv', :encoding => 'ASCII'

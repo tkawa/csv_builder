@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CsvBuilder # :nodoc:
   # Template handler for csv templates
   #
@@ -22,12 +20,6 @@ module CsvBuilder # :nodoc:
   # These default to 'UTF-8' and 'ISO-8859-1' respectively. e.g.
   #
   #   @output_encoding = 'UTF-8'
-
-  if defined?(Rails) and Rails.version < '3'
-    class TemplateHandler < ActionView::Template::Handler
-      include ActionView::Template::Handlers::Compilable
-    end
-  end
 
   # The ruby csv class will try to infer a separator to use, if the csv options
   # do not set it. ruby's csv calls pos, eof?, read, and rewind to check the first line
@@ -81,7 +73,7 @@ module CsvBuilder # :nodoc:
 
     def each
       yielder = CsvBuilder::Yielder.new(Proc.new{|data| yield data})
-      csv_stream = CsvBuilder::CSV_LIB.new(yielder, @csv_options || {})
+      csv_stream = CSV.new(yielder, @csv_options || {})
       csv = CsvBuilder::TransliteratingFilter.new(csv_stream, @input_encoding || 'UTF-8', @output_encoding || 'ISO-8859-1')
       @template_proc.call(csv)
     end
@@ -114,7 +106,7 @@ module CsvBuilder # :nodoc:
           }
           CsvBuilder::Streamer.new(template)
         else
-          output = CsvBuilder::CSV_LIB.generate(@csv_options || {}) do |faster_csv|
+          output = CSV.generate(@csv_options || {}) do |faster_csv|
             csv = CsvBuilder::TransliteratingFilter.new(faster_csv, @input_encoding || 'UTF-8', @output_encoding || 'ISO-8859-1')
             #{template.source}
           end

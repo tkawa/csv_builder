@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'codeclimate-test-reporter'
 CodeClimate::TestReporter.start
 
@@ -16,7 +15,7 @@ TEST_DATA = [
 ]
 
 def generate(options = {}, data = TEST_DATA)
-  CsvBuilder::CSV_LIB.generate(options) do |csv|
+  CSV.generate(options) do |csv|
     data.each do |row|
       csv << row
     end
