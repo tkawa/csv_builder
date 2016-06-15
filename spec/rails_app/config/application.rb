@@ -38,5 +38,7 @@ module RailsApp
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+
+    config.secret_key_base = '9ac2d0ad8ebcc312090e99d745006d3cf8'
   end
 end

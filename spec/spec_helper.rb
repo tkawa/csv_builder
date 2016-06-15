@@ -20,3 +20,7 @@ def generate(options = {}, data = TEST_DATA)
     end
   end
 end
+
+RSpec.configure do |config|
+    config.infer_spec_type_from_file_location!
+end
