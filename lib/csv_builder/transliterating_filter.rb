@@ -9,11 +9,13 @@
 # will generate a UTF-8 encoded string.
 class CsvBuilder::TransliteratingFilter
   # Transliterate into the required encoding if necessary
-  def initialize(csv, input_encoding = 'UTF-8', output_encoding = 'ISO-8859-1')
+  def initialize(csv, input_encoding = 'UTF-8', output_encoding = 'ISO-8859-1', options = {:undef => :replace})
     self.csv = csv
 
     # <tt>input_encoding</tt> is ignored because we know what this it is
     self.output_encoding = output_encoding
+
+    self.options = options
   end
 
   # Transliterate before passing to CSV so that the right characters
@@ -29,7 +31,9 @@ class CsvBuilder::TransliteratingFilter
 
   attr_accessor :output_encoding
 
+  attr_accessor :options
+
   def convert_row(row)
-    row.map { |value| value ? value.to_s.encode(output_encoding, :undef => :replace) : value }
+    row.map { |value| value.to_s.encode(output_encoding, options) unless value.nil? }
   end
 end
