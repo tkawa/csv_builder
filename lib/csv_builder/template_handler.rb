@@ -60,14 +60,13 @@ module CsvBuilder # :nodoc:
     def <<(data)
       @yielder.call data
     end
-
   end
 
   # Streamer implements an each method to facilitate streaming back through the Rails stack. It requires
   # the template to be passed to it as a proc. An instance of this class is returned from the template handler's
   # compile method, and will receive calls to each. Data is streamed by yielding back to the containing block.
   class Streamer
-    def initialize(template_proc, csv_options = {}, output_encoding = 'ISO-8859-1', encode_options = nil)
+    def initialize(template_proc, csv_options = {}, output_encoding = "ISO-8859-1", encode_options = nil)
       @template_proc = template_proc
       @csv_options = csv_options
       @output_encoding = output_encoding
@@ -75,16 +74,15 @@ module CsvBuilder # :nodoc:
     end
 
     def each
-      yielder = CsvBuilder::Yielder.new(Proc.new{|data| yield data})
+      yielder = CsvBuilder::Yielder.new(Proc.new { |data| yield data })
       csv_stream = CSV.new(yielder, @csv_options || {})
-      csv = CsvBuilder::TransliteratingFilter.new(csv_stream, @input_encoding || 'UTF-8', @output_encoding || 'ISO-8859-1', @encode_options)
+      csv = CsvBuilder::TransliteratingFilter.new(csv_stream, @input_encoding || "UTF-8", @output_encoding || "ISO-8859-1", @encode_options)
       @template_proc.call(csv)
     end
   end
 
   class TemplateHandler
-    def self.call(template)
-
+    def self.call(template, source = nil)
       <<-EOV
       begin
 
@@ -105,13 +103,13 @@ module CsvBuilder # :nodoc:
 
         if @streaming
           template = Proc.new {|csv|
-            #{template.source}
+            #{source || template.source}
           }
           CsvBuilder::Streamer.new(template, @csv_options, @output_encoding, @encode_options)
         else
           output = CSV.generate(@csv_options || {}) do |faster_csv|
             csv = CsvBuilder::TransliteratingFilter.new(faster_csv, @input_encoding || 'UTF-8', @output_encoding || 'ISO-8859-1', @encode_options)
-            #{template.source}
+            #{source || template.source}
           end
           output
         end
